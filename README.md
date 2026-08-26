@@ -1,4 +1,4 @@
-# dotnet-domain-lab
+# lab-dotnet-domain
 
 Laboratório .NET para consulta de informações DNS e WHOIS de domínios.
 
@@ -56,7 +56,7 @@ dotnet run --project src/Desafio.Umbler
 ## Estrutura
 
 ```
-dotnet-domain-lab/
+lab-dotnet-domain/
 ├── src/
 │   ├── Desafio.Umbler/          # API + UI (MVC/Blazor)
 │   └── Desafio.Umbler.Test/     # Testes unitários
