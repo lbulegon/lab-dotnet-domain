@@ -1,0 +1,135 @@
+@using Desafio.Umbler.Helpers
+@using Desafio.Umbler.Services
+@using Desafio.Umbler.Models
+@using Microsoft.JSInterop
+@inject DomainApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<section id="domain-search">
+    <div class="container py-5 pb-md-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3" style="font-weight: 700; color: #ffffff;">
+                Consulta de Domínio
+            </h1>
+            <p class="lead" style="color: rgba(255, 255, 255, 0.8);">
+                Descubra informações de DNS e WHOIS de qualquer domínio
+            </p>
+        </div>
+
+        <div id="box-result" class="row">
+            <div class="col-lg-9 col-md-8">
+                <label class="sr-only" for="txt-search">Domínio</label>
+                <input class="form-control form-control-lg domain @(HasError ? "is-invalid" : "")" 
+                       id="txt-search" 
+                       name="txt-search" 
+                       placeholder="Digite o domínio que deseja pesquisar (ex: umbler.com)" 
+                       type="text" 
+                       @onkeypress="HandleKeyPress"
+                       @bind="DomainInput"
+                       disabled="@IsLoading" />
+                @if (HasError)
+                {
+                    <div class="invalid-feedback">@ErrorMessage</div>
+                }
+            </div>
+            <div class="col-lg-3 col-md-4 text-xs-right">
+                <button type="button" 
+                        id="btn-search" 
+                        class="btn btn-success btn-block btn-lg text-xs-center" 
+                        @onclick="SearchDomain"
+                        disabled="@IsLoading">
+                    <i class="icon icon-search icon-white mr-1"></i>
+                    @if (IsLoading)
+                    {
+                        <span>Pesquisando...</span>
+                    }
+                    else
+                    {
+                        <span>Pesquisar</span>
+                    }
+                </button>
+            </div>
+        </div>
+
+        <div class="container w-100 mt-4">
+            @if (Result != null)
+            {
+                <DomainResultComponent Result="@Result" OnToggleWhois="ToggleWhois" />
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private string DomainInput { get; set; } = "";
+    private bool IsLoading { get; set; } = false;
+    private bool HasError { get; set; } = false;
+    private string ErrorMessage { get; set; } = "";
+    private DomainResult Result { get; set; }
+
+    private async Task SearchDomain()
+    {
+        if (string.IsNullOrWhiteSpace(DomainInput))
+        {
+            await ShowError("Digite um endereço válido");
+            return;
+        }
+
+        var validation = DomainValidator.ValidateDomain(DomainInput);
+        if (!validation.IsValid)
+        {
+            await ShowError(validation.ErrorMessage);
+            return;
+        }
+
+        HasError = false;
+        ErrorMessage = "";
+        IsLoading = true;
+        Result = null;
+
+        try
+        {
+            var domainResult = await ApiService.GetDomainAsync(validation.NormalizedDomain);
+
+            if (domainResult.RequestStatus == 400 || !string.IsNullOrEmpty(domainResult.Error))
+            {
+                await ShowError(domainResult.Error ?? "Domínio inválido");
+            }
+            else if (domainResult != null)
+            {
+                Result = domainResult;
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowError("Erro ao consultar domínio: " + ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchDomain();
+        }
+    }
+
+    private async Task ShowError(string message)
+    {
+        HasError = true;
+        ErrorMessage = message;
+        await JSRuntime.InvokeVoidAsync("alert", "Dados de pesquisa inconsistentes: " + message);
+    }
+
+    private void ToggleWhois()
+    {
+        // Este método será chamado pelo componente DomainResultComponent
+        // quando o usuário clicar para expandir/recolher o WHOIS
+        StateHasChanged();
+    }
+}
+

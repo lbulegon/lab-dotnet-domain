@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DesafioUmbler</title>
+
+    <environment include="Development">        
+        <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Lato:300,400,400i,700'>
+        <link rel="stylesheet" href="https://static.umbler.com/umbootstrap/themes/umbler-site/dist/css/theme.min.css?v=1">
+        <link rel='stylesheet' href="https://www.umbler.com/css/main.css?v=jzpPQTjVBwhK2gEOpAg6ZpvjUUQgKLsFVwwlRGnOZHY">
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://static.umbler.com/umbootstrap/themes/umbler-site/dist/css/theme.min.css?v=1">
+        <link rel='stylesheet' href="https://www.umbler.com/css/main.css?v=jzpPQTjVBwhK2gEOpAg6ZpvjUUQgKLsFVwwlRGnOZHY">
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a class="logo-link" href="/">
+                <img src="~/assets/tpl/logotipo.png" alt="Umbler Logo" class="umbler-logo" />
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+    
+    <footer class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                        <div class="footer-brand">
+                            <h5 class="footer-logo">
+                                <span class="logo-text">umbler</span>
+                                <span class="logo-subtitle">Domain Inspector</span>
+                            </h5>
+                            <p class="footer-description">
+                                Consulte informações de DNS e WHOIS de qualquer domínio de forma rápida e confiável.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 mb-4 mb-md-0">
+                        <h6 class="footer-title">Navegação</h6>
+                        <ul class="footer-links">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="#domain-search">Consultar Domínio</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-3 mb-4 mb-md-0">
+                        <h6 class="footer-title">Sobre</h6>
+                        <ul class="footer-links">
+                            <li><a href="https://www.umbler.com" target="_blank">Umbler</a></li>
+                            <li><a href="https://www.umbler.com/br/sobre" target="_blank">Sobre a Umbler</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-12">
+                        <h6 class="footer-title">Contato</h6>
+                        <ul class="footer-links">
+                            <li><a href="https://www.umbler.com/br/ajuda" target="_blank">Suporte</a></li>
+                            <li><a href="https://www.umbler.com/br/contato" target="_blank">Contato</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="footer-divider" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="footer-bottom">
+                            <div class="footer-copyright">
+                                <p>&copy; @DateTime.Now.Year Umbler, Inc. Todos os direitos reservados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="_framework/blazor.server.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

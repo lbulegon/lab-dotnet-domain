@@ -1,0 +1,7 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="mm-0" class="mm-page mm-slideout">
+    @(await Html.RenderComponentAsync<Desafio.Umbler.Components.DomainSearch>(Microsoft.AspNetCore.Mvc.Rendering.RenderMode.ServerPrerendered))
+</div>

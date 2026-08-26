@@ -1,0 +1,169 @@
+@using Desafio.Umbler.Models
+@using System.Globalization
+
+@if (Result != null && string.IsNullOrEmpty(Result.Error))
+{
+    <div class="domain-result-wrapper">
+        <div class="domain-result-card">
+            <div class="domain-card-header">
+                <div class="domain-icon-wrapper">
+                    <i class="domain-icon icon icon-globe"></i>
+                </div>
+                <div class="domain-title-section">
+                    <h3 class="domain-name">@(Result.Name ?? "N/A")</h3>
+                    <span class="domain-status">Domínio verificado</span>
+                </div>
+            </div>
+
+            <div class="domain-card-body">
+                <div class="domain-info-grid">
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper ip-icon">
+                            <i class="icon icon-network"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">Endereço IP</label>
+                            <span class="info-value ip-value">@(Result.Ip ?? "Não encontrado")</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper host-icon">
+                            <i class="icon icon-building"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">Hospedado em</label>
+                            <span class="info-value host-value">@(Result.HostedAt ?? "Não informado")</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper time-icon">
+                            <i class="icon icon-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">Última Atualização</label>
+                            <span class="info-value time-value">@FormatDate(Result.UpdatedAt)</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper ttl-icon">
+                            <i class="icon icon-timer"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">TTL (Time To Live)</label>
+                            <span class="info-value ttl-value">@FormatTTL(Result.Ttl)</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box id-box">
+                        <div class="info-icon-wrapper id-icon">
+                            <i class="icon icon-tag"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">ID de Registro</label>
+                            <span class="info-value id-value">#@(Result.Id?.ToString() ?? "N/A")</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Result.NameServers != null && Result.NameServers.Count > 0)
+                {
+                    <div class="nameservers-section">
+                        <div class="nameservers-header">
+                            <h5 class="nameservers-title">
+                                <i class="icon icon-server mr-2"></i>
+                                Name Servers
+                            </h5>
+                        </div>
+                        <div class="nameservers-list">
+                            @foreach (var ns in Result.NameServers)
+                            {
+                                <div class="nameserver-item">
+                                    <i class="icon icon-check-circle nameserver-icon"></i>
+                                    <span class="nameserver-value">@ns</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Result.WhoIs))
+                {
+                    <div class="whois-section">
+                        <div class="whois-header" @onclick="ToggleWhoisDisplay" style="cursor: pointer;">
+                            <h5 class="whois-title">
+                                <i class="icon icon-document mr-2"></i>
+                                Dados WHOIS Completos
+                                <i class="icon icon-chevron-down whois-chevron" style="transform: @(showWhois ? "rotate(180deg)" : "rotate(0deg)");"></i>
+                            </h5>
+                        </div>
+                        <div class="whois-content" style="display: @(showWhois ? "block" : "none");">
+                            <pre class="whois-text">@Result.WhoIs</pre>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else if (Result != null && !string.IsNullOrEmpty(Result.Error))
+{
+    <div class="domain-result-wrapper">
+        <div class="domain-error-card">
+            <div class="error-icon-wrapper">
+                <i class="error-icon icon icon-warning"></i>
+            </div>
+            <div class="error-content">
+                <h4 class="error-title">Erro na consulta</h4>
+                <p class="error-message">@Result.Error</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public DomainResult Result { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleWhois { get; set; }
+
+    private bool showWhois = false;
+
+    private void ToggleWhoisDisplay()
+    {
+        showWhois = !showWhois;
+    }
+
+    private string FormatDate(DateTime? date)
+    {
+        if (!date.HasValue) return "N/A";
+        return date.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.GetCultureInfo("pt-BR"));
+    }
+
+    private string FormatTTL(int? ttlSeconds)
+    {
+        if (!ttlSeconds.HasValue) return "N/A";
+
+        var ttl = ttlSeconds.Value;
+        var hours = ttl / 3600;
+        var minutes = (ttl % 3600) / 60;
+        var seconds = ttl % 60;
+
+        if (hours > 0)
+        {
+            return $"{hours}h {minutes}m {seconds}s";
+        }
+        else if (minutes > 0)
+        {
+            return $"{minutes}m {seconds}s";
+        }
+        else
+        {
+            return $"{seconds}s";
+        }
+    }
+}
+
